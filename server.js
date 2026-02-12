@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const express = require("express");
 
 const proposalsRouter = require("./src/routes/proposals");
@@ -8,36 +9,47 @@ const PORT = process.env.PORT || 3000;
 
 app.disable("x-powered-by");
 
-// Body parsing
+// Parsers
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-/**
- ✅ CRITICAL FIX:
- Force correct MIME type for HTML files so the browser renders them
- instead of printing the code.
-*/
-app.use(express.static(path.join(__dirname, "public"), {
-  extensions: ["html"],
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith(".html")) {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
+// Static assets (css/js/etc)
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    setHeaders: (res, filePath) => {
+      // Explicit MIME types for common assets (extra safety)
+      if (filePath.endsWith(".css")) res.setHeader("Content-Type", "text/css; charset=utf-8");
+      if (filePath.endsWith(".js")) res.setHeader("Content-Type", "application/javascript; charset=utf-8");
+      if (filePath.endsWith(".html")) res.setHeader("Content-Type", "text/html; charset=utf-8");
     }
-  }
-}));
+  })
+);
 
-// API routes
+// API
 app.use("/api", proposalsRouter);
 
-/**
- Explicit root route
- (acts as a second safety net)
-*/
-app.get("/", (req, res) => {
-  res
-    .status(200)
-    .type("html")
-    .sendFile(path.join(__dirname, "public", "builder.html"));
+// Health check (nice for Render)
+app.get("/health", (req, res) => res.status(200).send("ok"));
+
+// Serve builder.html with a forced HTML content-type (no MIME guessing)
+function sendBuilder(req, res) {
+  const filePath = path.join(__dirname, "public", "builder.html");
+  const html = fs.readFileSync(filePath, "utf8");
+  res.status(200);
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.send(html);
+}
+
+// Root
+app.get("/", sendBuilder);
+
+// Catch-all (if someone hits /whatever)
+app.get("*", (req, res, next) => {
+  // Let static files + API 404 normally
+  if (req.path.startsWith("/api")) return next();
+  // If it's a file request, let it 404 (or be served by static)
+  if (path.extname(req.path)) return next();
+  return sendBuilder(req, res);
 });
 
 app.listen(PORT, () => {
