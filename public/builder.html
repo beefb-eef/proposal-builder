@@ -1,171 +1,179 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proposal Builder</title>
+  <link rel="stylesheet" href="/styles.css"/>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Proposal Builder&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;link rel="stylesheet" href="/styles.css"/&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="app"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;header class="topbar"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="brand"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="dot"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="title"&gt;Proposal Builder&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="subtitle"&gt;Generate a proposal preview + PDF in two clicks.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="actions"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnPreview" class="btn"&gt;Update Preview&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnPdf" class="btn primary"&gt;Download PDF&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;section class="panel"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2&gt;Basics&lt;/h2&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;Vertical&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;select id="vertical"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="waterpark"&gt;Waterpark&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="zoo"&gt;Zoo&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="farm"&gt;Farm&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;Prepared For (Customer Name)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="clientName" type="text" placeholder="e.g., Hawaiian Falls Waterparks"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;Quote For&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;select id="product"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="both"&gt;Maps + AI Chat&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="maps"&gt;Maps Only&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="ai"&gt;AI Chat Only&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="bundleChoiceWrap" class="callout"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="calloutTitle"&gt;When quoting both:&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="radio"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="radio" name="bundleChoice" value="ai_only" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;Show AI Chat Only as primary option&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="radio"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="radio" name="bundleChoice" value="ai_plus_maps" checked /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;Show AI Chat + Maps as primary option&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;hr/&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2&gt;Maps&lt;/h2&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;Map Base Price (default $10,000)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="mapBasePrice" type="number" step="100" value="10000"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;One-Time Setup Fee (default $3,000)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="setupFee" type="number" step="100" value="3000"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;# of Maps&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="mapsCount" type="number" min="0" max="25" value="3"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnApplyMapCount" class="btn small"&gt;Apply&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="mapsList" class="list"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;hr/&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2&gt;AI Chat&lt;/h2&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;Attendance&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="attendance" type="number" min="0" step="1000" value="700000"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sliderField"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="sliderTop"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;Inquiry Ratio&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="chip" id="inquiryRatioLabel"&gt;30%&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="inquiryRatio" type="range" min="0" max="100" value="30"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="hint"&gt;Default 30%, adjustable&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sliderField"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="sliderTop"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;Avg Conversations per Guest&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="chip" id="avgConvosLabel"&gt;5&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="avgConvosPerGuest" type="range" min="0" max="20" value="5"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="hint"&gt;Default 5, adjustable&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;Cost per Conversation (default 0.005)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="costPerConversation" type="number" min="0" step="0.001" value="0.005"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sliderField"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="sliderTop"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;Margin Profit Ratio&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="chip" id="marginLabel"&gt;50%&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="marginProfitRatio" type="range" min="1" max="100" value="50"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="hint"&gt;Your formula uses: grossProfit = expectedCost / marginProfitRatio&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="metrics"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="metric"&gt;&lt;span&gt;AI Usage&lt;/span&gt;&lt;strong id="aiUsage"&gt;0&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="metric"&gt;&lt;span&gt;Expected Conversations&lt;/span&gt;&lt;strong id="expectedConvos"&gt;0&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="metric"&gt;&lt;span&gt;Expected Cost&lt;/span&gt;&lt;strong id="expectedCost"&gt;$0&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="metric"&gt;&lt;span&gt;Gross Profit&lt;/span&gt;&lt;strong id="grossProfit"&gt;$0&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="field"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;AI Quoted Price (defaults to Gross Profit)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="aiQuotedPrice" type="number" min="0" step="100" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="footerNote"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>Tip: hit &lt;strong&gt;Update Preview&lt;/strong&gt; any time. The PDF will match the preview exactly.</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;section class="panel preview"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2&gt;Preview&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;iframe id="previewFrame" title="Proposal Preview"&gt;&lt;/iframe&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="/builder.js"&gt;&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div class="title">Proposal Builder</div>
+          <div class="subtitle">Generate a proposal preview + PDF in two clicks.</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="btnPreview" class="btn">Update Preview</button>
+        <button id="btnPdf" class="btn primary">Download PDF</button>
+      </div>
+    </header>
+
+
+    <main class="grid">
+      <section class="panel">
+        <h2>Basics</h2>
+
+
+        <label class="field">
+          <span>Vertical</span>
+          <select id="vertical">
+            <option value="waterpark">Waterpark</option>
+            <option value="zoo">Zoo</option>
+            <option value="farm">Farm</option>
+          </select>
+        </label>
+
+
+        <label class="field">
+          <span>Prepared For (Customer Name)</span>
+          <input id="clientName" type="text" placeholder="e.g., Hawaiian Falls Waterparks"/>
+        </label>
+
+
+        <label class="field">
+          <span>Quote For</span>
+          <select id="product">
+            <option value="both">Maps + AI Chat</option>
+            <option value="maps">Maps Only</option>
+            <option value="ai">AI Chat Only</option>
+          </select>
+        </label>
+
+
+        <div id="bundleChoiceWrap" class="callout">
+          <div class="calloutTitle">When quoting both:</div>
+          <label class="radio">
+            <input type="radio" name="bundleChoice" value="ai_only" />
+            <span>Show AI Chat Only as primary option</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="bundleChoice" value="ai_plus_maps" checked />
+            <span>Show AI Chat + Maps as primary option</span>
+          </label>
+        </div>
+
+
+        <hr/>
+
+
+        <h2>Maps</h2>
+
+
+        <label class="field">
+          <span>Map Base Price (default $10,000)</span>
+          <input id="mapBasePrice" type="number" step="100" value="10000"/>
+        </label>
+
+
+        <label class="field">
+          <span>One-Time Setup Fee (default $3,000)</span>
+          <input id="setupFee" type="number" step="100" value="3000"/>
+        </label>
+
+
+        <div class="row">
+          <label class="field">
+            <span># of Maps</span>
+            <input id="mapsCount" type="number" min="0" max="25" value="3"/>
+          </label>
+          <button id="btnApplyMapCount" class="btn small">Apply</button>
+        </div>
+
+
+        <div id="mapsList" class="list"></div>
+
+
+        <hr/>
+
+
+        <h2>AI Chat</h2>
+
+
+        <label class="field">
+          <span>Attendance</span>
+          <input id="attendance" type="number" min="0" step="1000" value="700000"/>
+        </label>
+
+
+        <div class="sliderField">
+          <div class="sliderTop">
+            <span>Inquiry Ratio</span>
+            <span class="chip" id="inquiryRatioLabel">30%</span>
+          </div>
+          <input id="inquiryRatio" type="range" min="0" max="100" value="30"/>
+          <div class="hint">Default 30%, adjustable</div>
+        </div>
+
+
+        <div class="sliderField">
+          <div class="sliderTop">
+            <span>Avg Conversations per Guest</span>
+            <span class="chip" id="avgConvosLabel">5</span>
+          </div>
+          <input id="avgConvosPerGuest" type="range" min="0" max="20" value="5"/>
+          <div class="hint">Default 5, adjustable</div>
+        </div>
+
+
+        <label class="field">
+          <span>Cost per Conversation (default 0.005)</span>
+          <input id="costPerConversation" type="number" min="0" step="0.001" value="0.005"/>
+        </label>
+
+
+        <div class="sliderField">
+          <div class="sliderTop">
+            <span>Margin Profit Ratio</span>
+            <span class="chip" id="marginLabel">50%</span>
+          </div>
+          <input id="marginProfitRatio" type="range" min="1" max="100" value="50"/>
+          <div class="hint">Your formula uses: grossProfit = expectedCost / marginProfitRatio</div>
+        </div>
+
+
+        <div class="metrics">
+          <div class="metric"><span>AI Usage</span><strong id="aiUsage">0</strong></div>
+          <div class="metric"><span>Expected Conversations</span><strong id="expectedConvos">0</strong></div>
+          <div class="metric"><span>Expected Cost</span><strong id="expectedCost">$0</strong></div>
+          <div class="metric"><span>Gross Profit</span><strong id="grossProfit">$0</strong></div>
+        </div>
+
+
+        <label class="field">
+          <span>AI Quoted Price (defaults to Gross Profit)</span>
+          <input id="aiQuotedPrice" type="number" min="0" step="100" />
+        </label>
+
+
+        <div class="footerNote">
+          Tip: hit <strong>Update Preview</strong> any time. The PDF will match the preview exactly.
+        </div>
+      </section>
+
+
+      <section class="panel preview">
+        <h2>Preview</h2>
+        <iframe id="previewFrame" title="Proposal Preview"></iframe>
+      </section>
+    </main>
+  </div>
+
+
+  <script src="/builder.js"></script>
 </body>
 </html>
