@@ -7,20 +7,39 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.disable("x-powered-by");
+
+// Body parsing
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Static assets
-app.use(express.static(path.join(__dirname, "public")));
+/**
+ ✅ CRITICAL FIX:
+ Force correct MIME type for HTML files so the browser renders them
+ instead of printing the code.
+*/
+app.use(express.static(path.join(__dirname, "public"), {
+  extensions: ["html"],
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith(".html")) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+    }
+  }
+}));
 
-// API
+// API routes
 app.use("/api", proposalsRouter);
 
-// Home -> builder
+/**
+ Explicit root route
+ (acts as a second safety net)
+*/
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "builder.html"));
+  res
+    .status(200)
+    .type("html")
+    .sendFile(path.join(__dirname, "public", "builder.html"));
 });
 
 app.listen(PORT, () => {
-  console.log(`Proposal Builder running on http://localhost:${PORT}`);
+  console.log(`🚀 Proposal Builder running on port ${PORT}`);
 });
