@@ -1,20 +1,70 @@
 const { clampNumber, toNumber, currency, number, percent } = require("./format");
 
+const MAP_PLANS = {
+  basic: {
+    name: "Basic",
+    price: 10000,
+    features: [
+      "Interactive web map",
+      "Wait time manager",
+      "Location CMS"
+    ]
+  },
+  standard: {
+    name: "Standard",
+    price: 15000,
+    features: [
+      "Interactive web map",
+      "Wait time manager",
+      "Location CMS",
+      "Guest Dashboard",
+      "Guest Journey",
+      "Real time feedback"
+    ]
+  },
+  premium: {
+    name: "Premium",
+    price: 20000, // default since price wasn’t specified; editable in UI
+    features: [
+      "Interactive web map",
+      "Wait time manager",
+      "Location CMS",
+      "Guest Dashboard",
+      "Guest Journey",
+      "Real time feedback",
+      "Personalized offerings",
+      "Automated marketing",
+      "System integrations"
+    ]
+  }
+};
+
 function buildProposalModel(payload) {
-  const vertical = (payload.vertical || "waterpark").toLowerCase();
+  const vertical = String(payload.vertical || "waterpark").toLowerCase();
   const verticalLabel =
-    vertical === "zoo" ? "Zoo" : vertical === "farm" ? "Farm" : "Waterpark";
+    vertical === "zoo" ? "Zoo" :
+    vertical === "farm" ? "Farm" :
+    vertical === "waterpark" ? "Waterpark" :
+    "Venue";
 
   const clientName = String(payload.clientName || "").trim() || "Customer";
 
-  const product = (payload.product || "both").toLowerCase(); // maps | ai | both
-  const bundleChoice = (payload.bundleChoice || "ai_plus_maps").toLowerCase(); // ai_only | ai_plus_maps
+  // maps | ai | both
+  const product = String(payload.product || "both").toLowerCase();
 
-  // MAPS
-  const mapBasePrice = toNumber(payload.mapBasePrice, 10000);
-  const setupFee = toNumber(payload.setupFee, 3000); // keep as a configurable constant; default matches your sample
+  // bundle choice (kept)
+  const bundleChoice = String(payload.bundleChoice || "ai_plus_maps").toLowerCase();
+
+  // MAPS (plan-based)
+  const mapPlanKey = String(payload.mapPlan || "basic").toLowerCase();
+  const mapPlan = MAP_PLANS[mapPlanKey] || MAP_PLANS.basic;
+
+  // Allow override price (optional)
+  const mapUnitPrice = toNumber(payload.mapUnitPrice, mapPlan.price);
+
+  const setupFee = toNumber(payload.setupFee, 3000);
+
   const maps = Array.isArray(payload.maps) ? payload.maps : [];
-
   const cleanedMaps = maps
     .map((m, idx) => ({
       name: String(m?.name || "").trim() || `Map ${idx + 1}`
@@ -22,25 +72,23 @@ function buildProposalModel(payload) {
     .slice(0, 25);
 
   const mapsCount = cleanedMaps.length;
-  const mapsSubtotal = mapsCount * mapBasePrice;
+  const mapsSubtotal = mapsCount * mapUnitPrice;
 
-  // AI INPUTS
+  // AI inputs
   const attendance = clampNumber(payload.attendance ?? 700000, 0, 999999999);
   const inquiryRatio = clampNumber(payload.inquiryRatio ?? 0.30, 0, 1);
   const avgConvosPerGuest = clampNumber(payload.avgConvosPerGuest ?? 5, 0, 100);
   const costPerConversation = clampNumber(payload.costPerConversation ?? 0.005, 0, 100);
   const marginProfitRatio = clampNumber(payload.marginProfitRatio ?? 0.50, 0.01, 1);
 
-  // AI CALCS (as specified)
+  // AI calcs (your exact spec)
   const aiUsage = attendance * inquiryRatio;
   const expectedConversations = aiUsage * avgConvosPerGuest;
   const expectedCost = expectedConversations * costPerConversation;
   const grossProfit = expectedCost / marginProfitRatio;
 
-  // Quoted AI price defaults to grossProfit but can be overridden
   const aiQuotedPrice = toNumber(payload.aiQuotedPrice, grossProfit);
 
-  // TOTALS & PACKAGE DISPLAY LOGIC
   const includeMaps = product === "maps" || product === "both";
   const includeAI = product === "ai" || product === "both";
 
@@ -48,23 +96,10 @@ function buildProposalModel(payload) {
   const showAiOnlyCard = includeAI;
   const showBundleCards = product === "both";
 
-  const mapsOnlyTotal = mapsSubtotal + (includeMaps ? setupFee : 0);
+  const mapsOnlyTotal = (includeMaps ? mapsSubtotal + setupFee : 0);
   const aiOnlyTotal = aiQuotedPrice;
   const bundleTotal = (includeMaps ? mapsSubtotal + setupFee : 0) + aiQuotedPrice;
 
-  // “Recommended” selection when both
-  const recommendedCard =
-    product === "both"
-      ? (bundleChoice === "ai_only" ? "ai_only" : "ai_plus_maps")
-      : (product === "maps" ? "maps_only" : "ai_only");
-
-  // Theme colors (matches your waterpark orange vibe; tweak per vertical if you want)
-  const theme = {
-    accent: vertical === "zoo" ? "#16a34a" : vertical === "farm" ? "#7c3aed" : "#FF6B35",
-    accentSoft: vertical === "zoo" ? "#ecfdf5" : vertical === "farm" ? "#f5f3ff" : "#FFF5F0"
-  };
-
-  // Dates / validity (kept simple)
   const validityDays = 30;
   const preparedDate = payload.preparedDate || new Date().toLocaleDateString("en-US", {
     year: "numeric",
@@ -78,13 +113,14 @@ function buildProposalModel(payload) {
     clientName,
     product,
     bundleChoice,
-    recommendedCard,
-    theme,
 
-    // maps
-    maps: cleanedMaps,
-    mapBasePrice,
+    // maps plan
+    mapPlanKey,
+    mapPlanName: mapPlan.name,
+    mapPlanFeatures: mapPlan.features,
+    mapUnitPrice,
     setupFee,
+    maps: cleanedMaps,
     mapsCount,
     mapsSubtotal,
     mapsOnlyTotal,
@@ -105,7 +141,7 @@ function buildProposalModel(payload) {
     // bundle
     bundleTotal,
 
-    // card visibility
+    // cards
     showMapsOnlyCard,
     showAiOnlyCard,
     showBundleCards,
@@ -113,9 +149,8 @@ function buildProposalModel(payload) {
     preparedDate,
     validityDays,
 
-    // formatted helpers for template (so template stays dumb)
     fmt: {
-      mapBasePrice: currency(mapBasePrice),
+      mapUnitPrice: currency(mapUnitPrice),
       setupFee: currency(setupFee),
       mapsSubtotal: currency(mapsSubtotal),
       mapsOnlyTotal: currency(mapsOnlyTotal),

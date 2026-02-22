@@ -5,120 +5,382 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{clientName}} - Guest Experience Platform Proposal</title>
   <style>
-    @page { size: letter portrait; margin: 0.5in; }
+    @page {
+      size: letter portrait;
+      margin: 0.5in;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-      line-height: 1.5; color: #2d3748; background: white;
+      line-height: 1.5;
+      color: #2d3748;
+      background: white;
     }
-    .page { width: 7.5in; margin: 0 auto 20px auto; background: white; page-break-after: always; }
-    .header { padding-bottom: 12px; margin-bottom: 20px; border-bottom: 3px solid {{theme.accent}}; }
-    .logo { font-size: 32px; font-weight: 700; color: {{theme.accent}}; letter-spacing: -0.5px; }
 
-    .header-right { text-align: right; color: #2d3748; font-size: 14px; font-weight: 600; }
+    .page {
+      width: 7.5in;
+      margin: 0 auto 20px auto;
+      background: white;
+      page-break-after: always;
+    }
+
+    .header {
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+      border-bottom: 3px solid #FF6B35;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 700;
+      color: #FF6B35;
+      letter-spacing: -0.5px;
+    }
+
+    .header-right {
+      text-align: right;
+      color: #2d3748;
+      font-size: 14px;
+      font-weight: 600;
+    }
 
     .client-box {
-      background: {{theme.accentSoft}};
-      border-left: 4px solid {{theme.accent}};
+      background: #FFF5F0;
+      border-left: 4px solid #FF6B35;
       padding: 16px;
       margin-bottom: 20px;
     }
-    .client-box h2 { font-size: 18px; color: #2d3748; margin-bottom: 8px; }
-    .client-box p { font-size: 13px; color: #4a5568; line-height: 1.6; }
 
-    .usd-badge {
-      background: #dbeafe; color: #1e40af; padding: 6px 14px; border-radius: 6px;
-      font-size: 12px; font-weight: 700; display: inline-block; margin: 16px 0;
-      text-align: center; width: 100%;
+    .client-box h2 {
+      font-size: 18px;
+      color: #2d3748;
+      margin-bottom: 8px;
     }
 
-    h1 { text-align: center; font-size: 26px; color: #2d3748; margin: 20px 0 8px 0; }
-    .subtitle { text-align: center; color: #718096; font-size: 14px; margin-bottom: 24px; }
+    .client-box p {
+      font-size: 13px;
+      color: #4a5568;
+      line-height: 1.6;
+    }
 
-    .packages { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-    .package { border: 3px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
-    .package.recommended { border-color: #2563eb; }
+    .usd-badge {
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-block;
+      margin: 16px 0;
+      text-align: center;
+      width: 100%;
+    }
 
-    .package-header { padding: 20px; text-align: center; }
-    .package.recommended .package-header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; }
-    .package:not(.recommended) .package-header { background: #f8fafc; }
+    h1 {
+      text-align: center;
+      font-size: 26px;
+      color: #2d3748;
+      margin: 20px 0 8px 0;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #718096;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .packages {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .package {
+      border: 3px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .package.recommended {
+      border-color: #2563eb;
+    }
+
+    .package-header {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .package.recommended .package-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+    }
+
+    .package:not(.recommended) .package-header {
+      background: #f8fafc;
+    }
 
     .badge {
       background: rgba(255,255,255,0.3);
-      padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;
-      text-transform: uppercase; display: inline-block; margin-bottom: 8px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 8px;
     }
-    .package:not(.recommended) .badge { background: #dbeafe; color: #1e40af; }
-    .package-name { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+
+    .package:not(.recommended) .badge {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .package-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
     .package:not(.recommended) .package-name { color: #2d3748; }
-    .package-price { font-size: 40px; font-weight: 700; margin: 12px 0; }
+
+    .package-price {
+      font-size: 40px;
+      font-weight: 700;
+      margin: 12px 0;
+    }
+
     .package:not(.recommended) .package-price { color: #2d3748; }
-    .package-desc { font-size: 13px; opacity: 0.95; }
+
+    .package-desc {
+      font-size: 13px;
+      opacity: 0.95;
+    }
+
     .package:not(.recommended) .package-desc { color: #64748b; }
+
     .package-body { padding: 20px; }
 
     .section-title {
-      font-size: 11px; font-weight: 700; text-transform: uppercase; color: #2d3748;
-      letter-spacing: 0.5px; margin-bottom: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #2d3748;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
     }
 
     .price-row {
-      display: flex; justify-content: space-between; padding: 10px 12px;
-      background: #f8fafc; border-radius: 6px; margin-bottom: 8px; font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 13px;
     }
+
     .price-row-label { color: #475569; }
     .price-row-value { font-weight: 700; color: #1e293b; }
-    .note { font-size: 11px; color: #64748b; font-style: italic; margin-top: 8px; }
+
+    .note {
+      font-size: 11px;
+      color: #64748b;
+      font-style: italic;
+      margin-top: 8px;
+    }
 
     .optional-box {
-      background: #fef3c7; border: 2px dashed #f59e0b; border-radius: 8px; padding: 16px; margin-top: 16px;
+      background: #fef3c7;
+      border: 2px dashed #f59e0b;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
     }
+
     .optional-box .section-title { color: #92400e; }
 
     .features-list { list-style: none; padding: 0; }
-    .features-list li { padding: 6px 0 6px 20px; position: relative; font-size: 13px; color: #475569; line-height: 1.5; }
-    .features-list li::before { content: "✓"; position: absolute; left: 0; color: #10b981; font-weight: bold; }
 
-    /* PAGE 2-4 */
+    .features-list li {
+      padding: 6px 0 6px 20px;
+      position: relative;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .features-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+    }
+
+    /* PAGE 2-4 STYLES */
     .content-section { margin-bottom: 24px; }
-    .content-section h3 { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
+
+    .content-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+
     .bullet-list { list-style: none; padding: 0; }
-    .bullet-list li { padding: 6px 0 6px 18px; position: relative; font-size: 13px; color: #475569; line-height: 1.6; }
-    .bullet-list li::before { content: "•"; position: absolute; left: 0; color: #64748b; }
 
-    .info-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 14px; border-radius: 6px; margin: 16px 0; }
-    .info-box strong { color: #1e40af; font-size: 13px; display: block; margin-bottom: 6px; }
-    .info-box p { color: #1e3a8a; font-size: 12px; line-height: 1.6; }
+    .bullet-list li {
+      padding: 6px 0 6px 18px;
+      position: relative;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.6;
+    }
 
-    .text-section { font-size: 12px; color: #475569; line-height: 1.6; margin-bottom: 16px; }
-    .text-section strong { color: #1e293b; display: block; margin-bottom: 4px; }
+    .bullet-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #64748b;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 14px;
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+
+    .info-box strong {
+      color: #1e40af;
+      font-size: 13px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .info-box p {
+      color: #1e3a8a;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .text-section {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .text-section strong {
+      color: #1e293b;
+      display: block;
+      margin-bottom: 4px;
+    }
 
     .orange-box {
-      background: linear-gradient(135deg, {{theme.accent}} 0%, #FF8555 100%);
-      color: white; padding: 24px; border-radius: 10px; text-align: center; margin: 20px 0;
+      background: linear-gradient(135deg, #FF6B35 0%, #FF8555 100%);
+      color: white;
+      padding: 24px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 20px 0;
     }
-    .orange-box h3 { font-size: 20px; margin-bottom: 12px; color: white; }
-    .orange-box p { font-size: 14px; line-height: 1.6; opacity: 0.95; }
-    .stat-badge { background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 16px; display: inline-block; margin-top: 12px; }
+
+    .orange-box h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: white;
+    }
+
+    .orange-box p {
+      font-size: 14px;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+
+    .stat-badge {
+      background: rgba(255,255,255,0.25);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 16px;
+      display: inline-block;
+      margin-top: 12px;
+    }
 
     .feature-box {
-      background: white; border-left: 4px solid {{theme.accent}}; border: 1px solid #e2e8f0;
-      border-radius: 8px; padding: 18px; margin-bottom: 20px;
+      background: white;
+      border-left: 4px solid #FF6B35;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 20px;
     }
-    .feature-box h3 { font-size: 17px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
-    .feature-box p { font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 12px; }
+
+    .feature-box h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+
+    .feature-box p {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
 
     .arrow-list { list-style: none; padding: 0; }
-    .arrow-list li { padding: 5px 0 5px 20px; position: relative; font-size: 12px; color: #475569; line-height: 1.5; }
-    .arrow-list li::before { content: "→"; position: absolute; left: 0; color: {{theme.accent}}; font-weight: bold; }
+
+    .arrow-list li {
+      padding: 5px 0 5px 20px;
+      position: relative;
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .arrow-list li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #FF6B35;
+      font-weight: bold;
+    }
+
     .arrow-list strong { color: #1e293b; }
 
-    .cta-box { background: {{theme.accentSoft}}; padding: 16px; border-radius: 8px; margin-top: 24px; }
-    .cta-box h4 { font-size: 15px; color: #1e293b; margin-bottom: 8px; font-weight: 700; }
-    .cta-box p { font-size: 12px; color: #475569; margin-bottom: 4px; }
+    .cta-box {
+      background: #FFF5F0;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 24px;
+    }
+
+    .cta-box h4 {
+      font-size: 15px;
+      color: #1e293b;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .cta-box p {
+      font-size: 12px;
+      color: #475569;
+      margin-bottom: 4px;
+    }
 
     @media print {
-      body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
     }
   </style>
 </head>
@@ -131,8 +393,13 @@
 
     <div class="client-box">
       <h2>Prepared For: {{clientName}}</h2>
-      <p><strong>Project:</strong> Guest Experience Platform Proposal ({{verticalLabel}})</p>
-      <p>Comprehensive wayfinding and AI-powered guest engagement solution tailored for {{verticalLabel}} operations.</p>
+      <p><strong>Project:</strong> Guest Experience Platform Proposal</p>
+
+      {{#if (eq vertical "other")}}
+        <p>Comprehensive wayfinding and AI-powered guest engagement solution tailored to your venue.</p>
+      {{else}}
+        <p>Comprehensive wayfinding and AI-powered guest engagement solution tailored for {{verticalLabel}} operations.</p>
+      {{/if}}
     </div>
 
     <div class="usd-badge">ALL PRICING IN USD</div>
@@ -141,7 +408,8 @@
     <p class="subtitle">Choose the solution that best enhances your guest experience</p>
 
     <div class="packages">
-      {{!-- CARD 1: “Recommended” or left card --}}
+
+      {{!-- LEFT CARD --}}
       {{#if showBundleCards}}
         <div class="package recommended">
           <div class="package-header">
@@ -150,18 +418,16 @@
             <div class="package-price">{{fmt.bundleTotal}}</div>
             <div class="package-desc">Maps ({{mapsCount}}) + AI Chatbot</div>
           </div>
+
           <div class="package-body">
             <div style="margin-bottom: 20px;">
-              <div class="section-title">INTERACTIVE WAYFINDING MAPS</div>
+              <div class="section-title">INTERACTIVE WAYFINDING MAPS ({{mapPlanName}})</div>
               {{#each maps}}
                 <div class="price-row">
                   <span class="price-row-label">{{this.name}}</span>
-                  <span class="price-row-value">{{../fmt.mapBasePrice}}</span>
+                  <span class="price-row-value">{{../fmt.mapUnitPrice}}</span>
                 </div>
               {{/each}}
-              {{#ifEq mapsCount 0}}
-                <div class="note">No maps added yet.</div>
-              {{/ifEq}}
             </div>
 
             <div style="margin-bottom: 20px;">
@@ -197,7 +463,40 @@
           </div>
         </div>
       {{else}}
-        {{#if showAiOnlyCard}}
+        {{#if showMapsOnlyCard}}
+          <div class="package recommended">
+            <div class="package-header">
+              <div class="badge">RECOMMENDED</div>
+              <div class="package-name">Maps Only</div>
+              <div class="package-price">{{fmt.mapsOnlyTotal}}</div>
+              <div class="package-desc">{{mapPlanName}} ({{mapsCount}} maps)</div>
+            </div>
+            <div class="package-body">
+              <div style="margin-bottom: 20px;">
+                <div class="section-title">WHAT'S INCLUDED ({{mapPlanName}})</div>
+                {{#each maps}}
+                  <div class="price-row">
+                    <span class="price-row-label">{{this.name}}</span>
+                    <span class="price-row-value">{{../fmt.mapUnitPrice}}</span>
+                  </div>
+                {{/each}}
+                <div class="price-row">
+                  <span class="price-row-label">One-Time Setup Fee</span>
+                  <span class="price-row-value">{{fmt.setupFee}}</span>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <div class="section-title">CORE FEATURES</div>
+                <ul class="features-list">
+                  {{#each mapPlanFeatures}}
+                    <li>{{this}}</li>
+                  {{/each}}
+                </ul>
+              </div>
+            </div>
+          </div>
+        {{else}}
           <div class="package recommended">
             <div class="package-header">
               <div class="badge">RECOMMENDED</div>
@@ -214,52 +513,12 @@
                 </div>
                 <div class="note">*Based on {{fmt.attendance}} visitors, {{fmt.inquiryRatio}} inquiry ratio, {{fmt.avgConvosPerGuest}} conversations per guest</div>
               </div>
-
-              <div style="margin-bottom: 20px;">
-                <div class="section-title">USAGE ASSUMPTIONS</div>
-                <div class="price-row">
-                  <span class="price-row-label">Expected Conversations</span>
-                  <span class="price-row-value">{{fmt.expectedConversations}}</span>
-                </div>
-                <div class="price-row">
-                  <span class="price-row-label">Expected Cost</span>
-                  <span class="price-row-value">{{fmt.expectedCost}}</span>
-                </div>
-                <div class="price-row">
-                  <span class="price-row-label">Margin Ratio</span>
-                  <span class="price-row-value">{{fmt.marginProfitRatio}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        {{else}}
-          <div class="package recommended">
-            <div class="package-header">
-              <div class="badge">RECOMMENDED</div>
-              <div class="package-name">Maps Only</div>
-              <div class="package-price">{{fmt.mapsOnlyTotal}}</div>
-              <div class="package-desc">Interactive map solution ({{mapsCount}} maps)</div>
-            </div>
-            <div class="package-body">
-              <div style="margin-bottom: 20px;">
-                <div class="section-title">INTERACTIVE WAYFINDING MAPS</div>
-                {{#each maps}}
-                  <div class="price-row">
-                    <span class="price-row-label">{{this.name}}</span>
-                    <span class="price-row-value">{{../fmt.mapBasePrice}}</span>
-                  </div>
-                {{/each}}
-                <div class="price-row">
-                  <span class="price-row-label">One-Time Setup Fee</span>
-                  <span class="price-row-value">{{fmt.setupFee}}</span>
-                </div>
-              </div>
             </div>
           </div>
         {{/if}}
       {{/if}}
 
-      {{!-- CARD 2: right card changes based on selection --}}
+      {{!-- RIGHT CARD --}}
       {{#if showBundleCards}}
         <div class="package">
           <div class="package-header">
@@ -291,42 +550,7 @@
           </div>
         </div>
       {{else}}
-        {{#if showMapsOnlyCard}}
-          <div class="package">
-            <div class="package-header">
-              <div class="badge">ESSENTIAL</div>
-              <div class="package-name">Maps Only</div>
-              <div class="package-price">{{fmt.mapsOnlyTotal}}</div>
-              <div class="package-desc">Interactive map solution ({{mapsCount}} maps)</div>
-            </div>
-            <div class="package-body">
-              <div style="margin-bottom: 20px;">
-                <div class="section-title">WHAT'S INCLUDED</div>
-                {{#each maps}}
-                  <div class="price-row">
-                    <span class="price-row-label">{{this.name}}</span>
-                    <span class="price-row-value">{{../fmt.mapBasePrice}}</span>
-                  </div>
-                {{/each}}
-                <div class="price-row">
-                  <span class="price-row-label">One-Time Setup Fee</span>
-                  <span class="price-row-value">{{fmt.setupFee}}</span>
-                </div>
-              </div>
-
-              <div style="margin-bottom: 20px;">
-                <div class="section-title">CORE FEATURES</div>
-                <ul class="features-list">
-                  <li>Unlimited customizable pins</li>
-                  <li>Multi-language capability</li>
-                  <li>Geo-fenced marketing</li>
-                  <li>Guest analytics dashboard</li>
-                  <li>Upsell & cross-sell tools</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        {{else}}
+        {{#if showAiOnlyCard}}
           <div class="package">
             <div class="package-header">
               <div class="badge">ESSENTIAL</div>
@@ -338,10 +562,6 @@
               <div style="margin-bottom: 20px;">
                 <div class="section-title">USAGE ASSUMPTIONS</div>
                 <div class="price-row">
-                  <span class="price-row-label">AI Usage</span>
-                  <span class="price-row-value">{{fmt.aiUsage}}</span>
-                </div>
-                <div class="price-row">
                   <span class="price-row-label">Expected Conversations</span>
                   <span class="price-row-value">{{fmt.expectedConversations}}</span>
                 </div>
@@ -350,28 +570,65 @@
                   <span class="price-row-value">{{fmt.expectedCost}}</span>
                 </div>
                 <div class="price-row">
-                  <span class="price-row-label">Gross Profit (Quoted)</span>
+                  <span class="price-row-label">Margin Ratio</span>
+                  <span class="price-row-value">{{fmt.marginProfitRatio}}</span>
+                </div>
+                <div class="price-row">
+                  <span class="price-row-label">Quoted Price</span>
                   <span class="price-row-value">{{fmt.aiQuotedPrice}}</span>
                 </div>
               </div>
             </div>
           </div>
+        {{else}}
+          <div class="package">
+            <div class="package-header">
+              <div class="badge">ESSENTIAL</div>
+              <div class="package-name">Maps Only</div>
+              <div class="package-price">{{fmt.mapsOnlyTotal}}</div>
+              <div class="package-desc">{{mapPlanName}} ({{mapsCount}} maps)</div>
+            </div>
+            <div class="package-body">
+              <div style="margin-bottom: 20px;">
+                <div class="section-title">WHAT'S INCLUDED</div>
+                {{#each maps}}
+                  <div class="price-row">
+                    <span class="price-row-label">{{this.name}}</span>
+                    <span class="price-row-value">{{../fmt.mapUnitPrice}}</span>
+                  </div>
+                {{/each}}
+                <div class="price-row">
+                  <span class="price-row-label">One-Time Setup Fee</span>
+                  <span class="price-row-value">{{fmt.setupFee}}</span>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <div class="section-title">CORE FEATURES</div>
+                <ul class="features-list">
+                  {{#each mapPlanFeatures}}
+                    <li>{{this}}</li>
+                  {{/each}}
+                </ul>
+              </div>
+            </div>
+          </div>
         {{/if}}
       {{/if}}
+
     </div>
   </div>
 
-  <!-- PAGE 2: DETAILED FEATURES -->
+  <!-- PAGE 2 -->
   <div class="page">
     <div class="content-section">
       <h3>Interactive Maps - Core Capabilities</h3>
       <ul class="bullet-list">
         <li>Custom-designed interactive maps for your venue(s)</li>
-        <li>Real-time attraction wait times (where applicable)</li>
-        <li>Geo-fenced targeted marketing for food, retail, and special events</li>
-        <li>Unlimited customizable pins for attractions, amenities, and points of interest</li>
-        <li>Guest journey analytics and heat mapping</li>
-        <li>Upsell and cross-sell functionality for premium experiences</li>
+        <li>Wait time management where applicable</li>
+        <li>Location CMS for managing pins and POIs</li>
+        <li>Multi-language capability (optional add-on)</li>
+        <li>Guest analytics and engagement insights (plan-dependent)</li>
       </ul>
     </div>
 
@@ -379,14 +636,11 @@
       <h3>AI Chatbot - Your 24/7 Digital Employee</h3>
       <ul class="bullet-list">
         <li>Works in any language with automatic translation</li>
-        <li>Indexed with your information as the source of truth</li>
-        <li>Answers operational questions instantly: hours, pricing, policies, details</li>
-        <li>Provides personalized suggestions based on guest preferences</li>
-        <li>Operates 24/7 to handle guest inquiries anytime</li>
-        <li>Reduces phone call volume to your staff</li>
-        <li>Frees up staff to focus on in-venue guest experiences</li>
+        <li>Indexed with your venue information as the source of truth</li>
+        <li>Answers operational questions instantly - hours, pricing, policies, attraction details</li>
+        <li>Drastically reduces phone call volume to your staff</li>
         <li>Multi-channel integration (WhatsApp, Instagram, Facebook, SMS)</li>
-        <li>Conversation logging for insights and optimization</li>
+        <li>Complete conversation logging for insights and optimization</li>
       </ul>
     </div>
 
@@ -414,7 +668,7 @@
     </div>
   </div>
 
-  <!-- PAGE 3: WHY NUTMEG -->
+  <!-- PAGE 3 -->
   <div class="page">
     <div class="header">
       <div class="logo">nutmeg</div>
@@ -423,7 +677,7 @@
     <div class="header-right" style="margin-bottom: 20px;">Proposal for: {{clientName}}</div>
 
     <h1>Why Nutmeg for {{clientName}}</h1>
-    <p class="subtitle">Purpose-built for {{verticalLabel}}s to maximize guest engagement and drive revenue opportunities</p>
+    <p class="subtitle">Purpose-built to maximize guest engagement and drive revenue opportunities</p>
 
     <div class="orange-box">
       <h3>Web-Based Platform = Higher Adoption</h3>
@@ -433,51 +687,46 @@
 
     <div class="feature-box">
       <h3>Custom Interactive Wayfinding</h3>
-      <p>Our design team works with you to create stunning, on-brand maps that guide guests through your venue while driving engagement with revenue-generating opportunities.</p>
+      <p>Our team works with you to create stunning, on-brand maps that guide guests through your venue while driving engagement with revenue-generating opportunities.</p>
       <ul class="arrow-list">
-        <li><strong>Unlimited customizable pins</strong> for attractions, amenities, and points of interest</li>
-        <li><strong>Real-time updates</strong> where applicable</li>
-        <li><strong>Geo-fenced marketing</strong> at the right moments</li>
-        <li><strong>Upsell & cross-sell tools</strong> to promote premium experiences</li>
-        <li><strong>Multi-language support</strong> (additional languages can be an extra fee)</li>
+        <li><strong>Unlimited customizable pins</strong> - highlight attractions, food venues, retail, events</li>
+        <li><strong>Wait time tools</strong> - help guests plan their day and reduce friction</li>
+        <li><strong>Geo-fenced marketing</strong> - targeted messages at the right moments (plan-dependent)</li>
+        <li><strong>Multi-language support</strong> - serve diverse guests (additional languages are an extra fee)</li>
       </ul>
     </div>
 
     <div class="feature-box">
       <h3>AI Chatbot: Your Tireless Digital Employee</h3>
-      <p>More than a chatbot: an always-on team member that serves as the definitive source of truth, answering questions instantly and providing peace of mind to your guests.</p>
+      <p>More than a chatbot - it's an always-on team member that serves as the definitive source of truth about your venue, answering questions instantly and providing peace of mind to your guests.</p>
       <ul class="arrow-list">
-        <li><strong>Source of truth</strong> trained on your policies, hours, and offerings</li>
-        <li><strong>Always on</strong> 24/7, 365 days a year</li>
-        <li><strong>Answers operational questions fast</strong> like hours, pricing, policies, what to bring</li>
-        <li><strong>Works in any language</strong> to reduce language barriers</li>
-        <li><strong>Reduces staff workload</strong> so your team can focus on experiences</li>
+        <li><strong>Source of truth</strong> - trained on your information, policies, hours, and offerings</li>
+        <li><strong>Never takes a break</strong> - operates 24/7, 365 days a year</li>
+        <li><strong>Answers operational questions fast</strong> - hours, pricing, requirements, what to bring</li>
+        <li><strong>Works in any language</strong> - no language barriers for international guests</li>
       </ul>
     </div>
   </div>
 
-  <!-- PAGE 4: ENGAGEMENT & SUPPORT -->
+  <!-- PAGE 4 -->
   <div class="page">
     <div class="feature-box">
       <h3>Maximize Guest Engagement & Revenue</h3>
-      <p>{{clientName}} can benefit from increased guest engagement that drives revenue through food & beverage, retail, and premium experiences. Nutmeg is built for exactly this.</p>
+      <p>{{clientName}} can benefit from increased guest engagement that drives revenue through food & beverage, retail, and premium experiences.</p>
       <ul class="arrow-list">
-        <li><strong>No app download barrier</strong> every guest can access instantly via web browser</li>
-        <li><strong>High adoption rate</strong> means more eyes on your revenue opportunities</li>
-        <li><strong>Strategic placement</strong> promotes offers at optimal times</li>
-        <li><strong>Analytics dashboard</strong> understands guest flow and engagement</li>
-        <li><strong>Reduce operational costs</strong> fewer repetitive questions to staff</li>
+        <li><strong>No app download barrier</strong> - every guest can access instantly via web browser</li>
+        <li><strong>Higher adoption</strong> - means more eyes on your revenue opportunities</li>
+        <li><strong>Analytics dashboard</strong> - understand guest flow and optimize engagement (plan-dependent)</li>
       </ul>
     </div>
 
     <div class="feature-box">
       <h3>Dedicated Support & Partnership</h3>
-      <p>You're not just getting software: you're getting a partner committed to your success.</p>
+      <p>You're not just getting software - you're getting a partner committed to your success.</p>
       <ul class="arrow-list">
-        <li><strong>Designated key account manager</strong> single point of contact</li>
-        <li><strong>Responsive support</strong> help when you need it</li>
-        <li><strong>Comprehensive onboarding</strong> training and enablement</li>
-        <li><strong>Ongoing optimization</strong> continuous improvements over time</li>
+        <li><strong>Designated key account manager</strong> - single point of contact</li>
+        <li><strong>Comprehensive onboarding & training</strong> - ensure your team is confident and capable</li>
+        <li><strong>Ongoing optimization</strong> - continuous improvement over time</li>
       </ul>
     </div>
 

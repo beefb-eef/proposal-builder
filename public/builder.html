@@ -1,179 +1,165 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Proposal Builder</title>
-  <link rel="stylesheet" href="/styles.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proposal Builder</title>
+  <link rel="stylesheet" href="/styles.css"/>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="dot"></div>
-        <div>
-          <div class="title">Proposal Builder</div>
-          <div class="subtitle">Generate a proposal preview + PDF in two clicks.</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button id="btnPreview" class="btn">Update Preview</button>
-        <button id="btnPdf" class="btn primary">Download PDF</button>
-      </div>
-    </header>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div class="title">Proposal Builder</div>
+          <div class="subtitle">Generate a proposal preview + PDF in two clicks.</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="btnPreview" class="btn">Update Preview</button>
+        <button id="btnPdf" class="btn primary">Download PDF</button>
+      </div>
+    </header>
 
+    <main class="grid">
+      <section class="panel">
+        <h2>Basics</h2>
 
-    <main class="grid">
-      <section class="panel">
-        <h2>Basics</h2>
+        <label class="field">
+          <span>Client Type</span>
+          <select id="vertical">
+            <option value="waterpark">Waterpark</option>
+            <option value="zoo">Zoo</option>
+            <option value="farm">Farm</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
 
+        <label class="field">
+          <span>Prepared For (Customer Name)</span>
+          <input id="clientName" type="text" placeholder="e.g., Hawaiian Falls Waterparks"/>
+        </label>
 
-        <label class="field">
-          <span>Vertical</span>
-          <select id="vertical">
-            <option value="waterpark">Waterpark</option>
-            <option value="zoo">Zoo</option>
-            <option value="farm">Farm</option>
-          </select>
-        </label>
+        <label class="field">
+          <span>Quote For</span>
+          <select id="product">
+            <option value="both">Maps + AI Chat</option>
+            <option value="maps">Maps Only</option>
+            <option value="ai">AI Chat Only</option>
+          </select>
+        </label>
 
+        <div id="bundleChoiceWrap" class="callout">
+          <div class="calloutTitle">When quoting both:</div>
+          <label class="radio">
+            <input type="radio" name="bundleChoice" value="ai_only" />
+            <span>Show AI Chat Only as primary option</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="bundleChoice" value="ai_plus_maps" checked />
+            <span>Show AI Chat + Maps as primary option</span>
+          </label>
+        </div>
 
-        <label class="field">
-          <span>Prepared For (Customer Name)</span>
-          <input id="clientName" type="text" placeholder="e.g., Hawaiian Falls Waterparks"/>
-        </label>
+        <hr/>
 
+        <h2>Maps</h2>
 
-        <label class="field">
-          <span>Quote For</span>
-          <select id="product">
-            <option value="both">Maps + AI Chat</option>
-            <option value="maps">Maps Only</option>
-            <option value="ai">AI Chat Only</option>
-          </select>
-        </label>
+        <label class="field">
+          <span>Map Plan</span>
+          <select id="mapPlan">
+            <option value="basic">Basic ($10,000 / year)</option>
+            <option value="standard">Standard ($15,000 / year)</option>
+            <option value="premium">Premium (default $20,000 / year)</option>
+          </select>
+        </label>
 
+        <label class="field">
+          <span>Map Annual Unit Price (editable)</span>
+          <input id="mapUnitPrice" type="number" step="100" value="10000"/>
+        </label>
 
-        <div id="bundleChoiceWrap" class="callout">
-          <div class="calloutTitle">When quoting both:</div>
-          <label class="radio">
-            <input type="radio" name="bundleChoice" value="ai_only" />
-            <span>Show AI Chat Only as primary option</span>
-          </label>
-          <label class="radio">
-            <input type="radio" name="bundleChoice" value="ai_plus_maps" checked />
-            <span>Show AI Chat + Maps as primary option</span>
-          </label>
-        </div>
+        <label class="field">
+          <span>One-Time Setup Fee (default $3,000)</span>
+          <input id="setupFee" type="number" step="100" value="3000"/>
+        </label>
 
+        <div class="row">
+          <label class="field">
+            <span># of Maps</span>
+            <input id="mapsCount" type="number" min="0" max="25" value="3"/>
+          </label>
+          <button id="btnApplyMapCount" class="btn small">Apply</button>
+        </div>
 
-        <hr/>
+        <div id="mapsList" class="list"></div>
 
+        <hr/>
 
-        <h2>Maps</h2>
+        <h2>AI Chat</h2>
 
+        <label class="field">
+          <span>Attendance</span>
+          <input id="attendance" type="number" min="0" step="1000" value="700000"/>
+        </label>
 
-        <label class="field">
-          <span>Map Base Price (default $10,000)</span>
-          <input id="mapBasePrice" type="number" step="100" value="10000"/>
-        </label>
+        <div class="sliderField">
+          <div class="sliderTop">
+            <span>Inquiry Ratio</span>
+            <span class="chip" id="inquiryRatioLabel">30%</span>
+          </div>
+          <input id="inquiryRatio" type="range" min="0" max="100" value="30"/>
+          <div class="hint">Default 30%, adjustable</div>
+        </div>
 
+        <div class="sliderField">
+          <div class="sliderTop">
+            <span>Avg Conversations per Guest</span>
+            <span class="chip" id="avgConvosLabel">5</span>
+          </div>
+          <input id="avgConvosPerGuest" type="range" min="0" max="20" value="5"/>
+          <div class="hint">Default 5, adjustable</div>
+        </div>
 
-        <label class="field">
-          <span>One-Time Setup Fee (default $3,000)</span>
-          <input id="setupFee" type="number" step="100" value="3000"/>
-        </label>
+        <label class="field">
+          <span>Cost per Conversation (default 0.005)</span>
+          <input id="costPerConversation" type="number" min="0" step="0.001" value="0.005"/>
+        </label>
 
+        <div class="sliderField">
+          <div class="sliderTop">
+            <span>Margin Profit Ratio</span>
+            <span class="chip" id="marginLabel">50%</span>
+          </div>
+          <input id="marginProfitRatio" type="range" min="1" max="100" value="50"/>
+          <div class="hint">grossProfit = expectedCost / marginProfitRatio</div>
+        </div>
 
-        <div class="row">
-          <label class="field">
-            <span># of Maps</span>
-            <input id="mapsCount" type="number" min="0" max="25" value="3"/>
-          </label>
-          <button id="btnApplyMapCount" class="btn small">Apply</button>
-        </div>
+        <div class="metrics">
+          <div class="metric"><span>AI Usage</span><strong id="aiUsage">0</strong></div>
+          <div class="metric"><span>Expected Conversations</span><strong id="expectedConvos">0</strong></div>
+          <div class="metric"><span>Expected Cost</span><strong id="expectedCost">$0</strong></div>
+          <div class="metric"><span>Gross Profit</span><strong id="grossProfit">$0</strong></div>
+        </div>
 
+        <label class="field">
+          <span>AI Quoted Price (defaults to Gross Profit)</span>
+          <input id="aiQuotedPrice" type="number" min="0" step="100" />
+        </label>
 
-        <div id="mapsList" class="list"></div>
+        <div class="footerNote">
+          Tip: hit <strong>Update Preview</strong> any time. The PDF will match the preview exactly.
+        </div>
+      </section>
 
+      <section class="panel preview">
+        <h2>Preview</h2>
+        <iframe id="previewFrame" title="Proposal Preview"></iframe>
+      </section>
+    </main>
+  </div>
 
-        <hr/>
-
-
-        <h2>AI Chat</h2>
-
-
-        <label class="field">
-          <span>Attendance</span>
-          <input id="attendance" type="number" min="0" step="1000" value="700000"/>
-        </label>
-
-
-        <div class="sliderField">
-          <div class="sliderTop">
-            <span>Inquiry Ratio</span>
-            <span class="chip" id="inquiryRatioLabel">30%</span>
-          </div>
-          <input id="inquiryRatio" type="range" min="0" max="100" value="30"/>
-          <div class="hint">Default 30%, adjustable</div>
-        </div>
-
-
-        <div class="sliderField">
-          <div class="sliderTop">
-            <span>Avg Conversations per Guest</span>
-            <span class="chip" id="avgConvosLabel">5</span>
-          </div>
-          <input id="avgConvosPerGuest" type="range" min="0" max="20" value="5"/>
-          <div class="hint">Default 5, adjustable</div>
-        </div>
-
-
-        <label class="field">
-          <span>Cost per Conversation (default 0.005)</span>
-          <input id="costPerConversation" type="number" min="0" step="0.001" value="0.005"/>
-        </label>
-
-
-        <div class="sliderField">
-          <div class="sliderTop">
-            <span>Margin Profit Ratio</span>
-            <span class="chip" id="marginLabel">50%</span>
-          </div>
-          <input id="marginProfitRatio" type="range" min="1" max="100" value="50"/>
-          <div class="hint">Your formula uses: grossProfit = expectedCost / marginProfitRatio</div>
-        </div>
-
-
-        <div class="metrics">
-          <div class="metric"><span>AI Usage</span><strong id="aiUsage">0</strong></div>
-          <div class="metric"><span>Expected Conversations</span><strong id="expectedConvos">0</strong></div>
-          <div class="metric"><span>Expected Cost</span><strong id="expectedCost">$0</strong></div>
-          <div class="metric"><span>Gross Profit</span><strong id="grossProfit">$0</strong></div>
-        </div>
-
-
-        <label class="field">
-          <span>AI Quoted Price (defaults to Gross Profit)</span>
-          <input id="aiQuotedPrice" type="number" min="0" step="100" />
-        </label>
-
-
-        <div class="footerNote">
-          Tip: hit <strong>Update Preview</strong> any time. The PDF will match the preview exactly.
-        </div>
-      </section>
-
-
-      <section class="panel preview">
-        <h2>Preview</h2>
-        <iframe id="previewFrame" title="Proposal Preview"></iframe>
-      </section>
-    </main>
-  </div>
-
-
-  <script src="/builder.js"></script>
+  <script src="/builder.js"></script>
 </body>
 </html>

@@ -5,7 +5,8 @@ const clientNameEl = el("clientName");
 const productEl = el("product");
 const bundleChoiceWrap = el("bundleChoiceWrap");
 
-const mapBasePriceEl = el("mapBasePrice");
+const mapPlanEl = el("mapPlan");
+const mapUnitPriceEl = el("mapUnitPrice");
 const setupFeeEl = el("setupFee");
 const mapsCountEl = el("mapsCount");
 const btnApplyMapCount = el("btnApplyMapCount");
@@ -29,6 +30,12 @@ const aiQuotedPriceEl = el("aiQuotedPrice");
 const btnPreview = el("btnPreview");
 const btnPdf = el("btnPdf");
 const previewFrame = el("previewFrame");
+
+const MAP_PLAN_DEFAULTS = {
+  basic: 10000,
+  standard: 15000,
+  premium: 20000
+};
 
 function fmtNumber(n, decimals = 0) {
   const x = Number(n);
@@ -78,10 +85,6 @@ function setMapRows(count) {
     input.value = (current[i]?.name || "").trim() || defaultMapName(i);
     input.setAttribute("data-map-index", String(i));
 
-    input.addEventListener("input", () => {
-      // no-op, live calc doesn't require map names
-    });
-
     row.appendChild(label);
     row.appendChild(input);
     mapsListEl.appendChild(row);
@@ -89,16 +92,24 @@ function setMapRows(count) {
 }
 
 function defaultMapName(i) {
-  // Friendly defaults that don’t fight you
   const v = verticalEl.value;
   if (v === "waterpark") return ["Roanoke Park Map", "Mansfield Park Map", "Waco Park Map"][i] || `Park Map ${i + 1}`;
   if (v === "zoo") return ["Main Zoo Map", "Kids Zone Map", "Safari Area Map"][i] || `Zoo Map ${i + 1}`;
-  return ["Main Farm Map", "Attractions Map", "Seasonal Map"][i] || `Farm Map ${i + 1}`;
+  if (v === "farm") return ["Main Farm Map", "Attractions Map", "Seasonal Map"][i] || `Farm Map ${i + 1}`;
+  return ["Main Venue Map", "Attractions Map", "Venue Map 3"][i] || `Map ${i + 1}`;
 }
 
 function toggleBundleChoice() {
-  const show = productEl.value === "both";
-  bundleChoiceWrap.style.display = show ? "block" : "none";
+  bundleChoiceWrap.style.display = productEl.value === "both" ? "block" : "none";
+}
+
+function applyMapPlanDefaultIfNotTouched() {
+  const plan = mapPlanEl.value;
+  const defaultPrice = MAP_PLAN_DEFAULTS[plan] ?? 10000;
+
+  if (!mapUnitPriceEl.dataset.touched) {
+    mapUnitPriceEl.value = defaultPrice;
+  }
 }
 
 function calcAiLive() {
@@ -122,7 +133,6 @@ function calcAiLive() {
   expectedCostEl.textContent = fmtCurrency(expectedCost, 0);
   grossProfitEl.textContent = fmtCurrency(grossProfit, 0);
 
-  // Set default AI quoted price only if empty
   if (!aiQuotedPriceEl.value) {
     aiQuotedPriceEl.value = Math.round(grossProfit);
   }
@@ -135,7 +145,8 @@ function buildPayload() {
     product: productEl.value,
     bundleChoice: getBundleChoice(),
 
-    mapBasePrice: Number(mapBasePriceEl.value),
+    mapPlan: mapPlanEl.value,
+    mapUnitPrice: Number(mapUnitPriceEl.value),
     setupFee: Number(setupFeeEl.value),
     maps: getMapsFromUI(),
 
@@ -202,27 +213,23 @@ async function downloadPdf() {
 }
 
 function wireEvents() {
-  btnApplyMapCount.addEventListener("click", () => {
-    setMapRows(mapsCountEl.value);
-  });
+  btnApplyMapCount.addEventListener("click", () => setMapRows(mapsCountEl.value));
 
   verticalEl.addEventListener("change", () => {
-    // update default names if fields are blank-ish
     const current = getMapsFromUI();
     setMapRows(current.length || Number(mapsCountEl.value) || 0);
   });
 
-  productEl.addEventListener("change", () => {
-    toggleBundleChoice();
+  productEl.addEventListener("change", () => toggleBundleChoice());
+
+  mapPlanEl.addEventListener("change", () => applyMapPlanDefaultIfNotTouched());
+  mapUnitPriceEl.addEventListener("input", () => {
+    mapUnitPriceEl.dataset.touched = "1";
   });
 
   [attendanceEl, inquiryRatioEl, avgConvosEl, costPerConversationEl, marginEl].forEach((x) => {
     x.addEventListener("input", () => {
-      // If user changed a calc input, reset AI quoted price only if it was not manually edited.
-      // We approximate manual edit by checking a dataset flag.
-      if (!aiQuotedPriceEl.dataset.touched) {
-        aiQuotedPriceEl.value = "";
-      }
+      if (!aiQuotedPriceEl.dataset.touched) aiQuotedPriceEl.value = "";
       calcAiLive();
     });
   });
@@ -233,16 +240,12 @@ function wireEvents() {
 
   btnPreview.addEventListener("click", updatePreview);
   btnPdf.addEventListener("click", downloadPdf);
-
-  // If they flip bundle radio
-  document.querySelectorAll('input[name="bundleChoice"]').forEach((r) => {
-    r.addEventListener("change", () => {});
-  });
 }
 
 function init() {
   toggleBundleChoice();
   setMapRows(mapsCountEl.value);
+  applyMapPlanDefaultIfNotTouched();
   calcAiLive();
   wireEvents();
   updatePreview().catch(() => {});
