@@ -1,9 +1,32 @@
 const puppeteer = require("puppeteer");
+const fs = require("fs");
+
+function findChromeExecutable() {
+  // Common paths on Render / Linux containers
+  const candidates = [
+    process.env.PUPPETEER_EXECUTABLE_PATH,
+    process.env.CHROME_BIN,
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/chromium"
+  ].filter(Boolean);
+
+  for (const p of candidates) {
+    try {
+      if (fs.existsSync(p)) return p;
+    } catch (_) {}
+  }
+
+  return null;
+}
 
 async function htmlToPdfBuffer(html) {
+  const executablePath = findChromeExecutable();
+
   const browser = await puppeteer.launch({
-    // Render-friendly Chromium flags
     headless: "new",
+    executablePath: executablePath || undefined,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -16,21 +39,14 @@ async function htmlToPdfBuffer(html) {
 
   try {
     const page = await browser.newPage();
-
-    // Avoid "networkidle0" on Render (it can hang).
-    // "load" is much more stable for HTML we provide directly.
     await page.setContent(html, { waitUntil: "load" });
-
-    // Ensure backgrounds/gradients match your HTML
     await page.emulateMediaType("screen");
 
-    const pdfBuffer = await page.pdf({
+    return await page.pdf({
       format: "Letter",
       printBackground: true,
       margin: { top: "0.5in", right: "0.5in", bottom: "0.5in", left: "0.5in" }
     });
-
-    return pdfBuffer;
   } finally {
     await browser.close();
   }
