@@ -24,7 +24,7 @@ const MAP_PLANS = {
   },
   premium: {
     name: "Premium",
-    price: 20000, // default since price wasn’t specified; editable in UI
+    price: 30000, // default since price wasn’t specified; editable in UI
     features: [
       "Interactive web map",
       "Wait time manager",

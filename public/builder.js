@@ -188,11 +188,11 @@ async function downloadPdf() {
     body: JSON.stringify(payload)
   });
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    alert(err?.error || "PDF generation failed");
-    return;
-  }
+ if (!res.ok) {
+  const err = await res.json().catch(() => ({}));
+  alert(`${err?.error || "PDF generation failed"}${err?.details ? `\n\n${err.details}` : ""}`);
+  return;
+}
 
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);

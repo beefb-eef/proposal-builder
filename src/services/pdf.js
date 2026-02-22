@@ -2,12 +2,27 @@ const puppeteer = require("puppeteer");
 
 async function htmlToPdfBuffer(html) {
   const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    // Render-friendly Chromium flags
+    headless: "new",
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--no-zygote",
+      "--single-process"
+    ]
   });
 
   try {
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    // Avoid "networkidle0" on Render (it can hang).
+    // "load" is much more stable for HTML we provide directly.
+    await page.setContent(html, { waitUntil: "load" });
+
+    // Ensure backgrounds/gradients match your HTML
+    await page.emulateMediaType("screen");
 
     const pdfBuffer = await page.pdf({
       format: "Letter",
