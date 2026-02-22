@@ -17,7 +17,7 @@ router.post("/preview", async (req, res) => {
     const html = await renderProposalHtml(model);
     res.json({ html });
   } catch (err) {
-    console.error(err);
+    console.error("PREVIEW failed:", err?.stack || err);
     res.status(400).json({
       error: "Could not render preview.",
       details: err?.message || String(err)
@@ -46,10 +46,11 @@ router.post("/pdf", async (req, res) => {
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${safeName}.pdf"`);
-    res.send(pdfBuffer);
+    res.status(200).send(pdfBuffer);
   } catch (err) {
-    console.error(err);
-    res.status(400).json({
+    console.error("PDF failed:", err?.stack || err);
+    // PDF failures are server failures, not "bad request"
+    res.status(500).json({
       error: "Could not generate PDF.",
       details: err?.message || String(err)
     });
