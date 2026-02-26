@@ -1,8 +1,21 @@
+const path = require("path");
 const puppeteer = require("puppeteer");
 
+function getCacheDir() {
+  // Render expects this location (matches your error message)
+  if (process.env.RENDER) return "/opt/render/.cache/puppeteer";
+  // Local dev cache inside your project folder
+  return path.join(process.cwd(), ".cache", "puppeteer");
+}
+
 async function htmlToPdfBuffer(html) {
+  // Ensure Puppeteer looks in the same cache dir we install into
+  process.env.PUPPETEER_CACHE_DIR = process.env.PUPPETEER_CACHE_DIR || getCacheDir();
+
   const browser = await puppeteer.launch({
     headless: "new",
+    // This makes puppeteer use its downloaded Chrome (when present)
+    executablePath: puppeteer.executablePath(),
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -13,11 +26,10 @@ async function htmlToPdfBuffer(html) {
 
   try {
     const page = await browser.newPage();
-
     await page.setContent(html, { waitUntil: "load" });
     await page.emulateMediaType("screen");
 
-    return await page.pdf({
+    const pdfBuffer = await page.pdf({
       format: "Letter",
       printBackground: true,
       margin: {
@@ -27,6 +39,8 @@ async function htmlToPdfBuffer(html) {
         left: "0.5in"
       }
     });
+
+    return pdfBuffer;
   } finally {
     await browser.close();
   }
