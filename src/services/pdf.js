@@ -9,13 +9,21 @@ function getCacheDir() {
   return path.join(process.cwd(), ".cache", "puppeteer");
 }
 
+function getBuildIdSafe() {
+  // Prefer Puppeteer-pinned revision if available, else install "stable"
+  if (typeof puppeteer.browserRevision === "function") {
+    return puppeteer.browserRevision(); // usually a numeric-ish revision string
+  }
+  return "stable";
+}
+
 async function ensureChromeExecutable() {
   const cacheDir = process.env.PUPPETEER_CACHE_DIR || getCacheDir();
   process.env.PUPPETEER_CACHE_DIR = cacheDir;
 
   fs.mkdirSync(cacheDir, { recursive: true });
 
-  const buildId = await puppeteer.browserVersion(); // e.g. "145.0.7632.77"
+  const buildId = getBuildIdSafe();
 
   const getExePath = () =>
     computeExecutablePath({
@@ -26,7 +34,6 @@ async function ensureChromeExecutable() {
 
   let executablePath = getExePath();
 
-  // If missing, download Chrome-for-Testing into cacheDir
   if (!fs.existsSync(executablePath)) {
     console.log(`[pdf] Chrome missing. Installing buildId=${buildId} into ${cacheDir}...`);
 
@@ -34,14 +41,12 @@ async function ensureChromeExecutable() {
       cacheDir,
       browser: "chrome",
       buildId,
-      // Force Linux download on Render
-      platform: "linux"
+      platform: "linux" // Render is Linux
     });
 
     executablePath = getExePath();
 
     if (!fs.existsSync(executablePath)) {
-      // If we still can’t find it, fail with a very explicit error
       const listing = fs.existsSync(cacheDir)
         ? fs.readdirSync(cacheDir, { withFileTypes: true }).map(d => d.name).join(", ")
         : "(cacheDir does not exist)";
