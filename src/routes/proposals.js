@@ -1,59 +1,36 @@
+// src/routes/proposals.js
 const express = require("express");
-const { buildProposalModel } = require("../services/calc");
-const { renderProposalHtml } = require("../services/renderTemplate");
-const { htmlToPdfBuffer } = require("../services/pdf");
-
 const router = express.Router();
 
-/**
- * POST /api/preview
- * Body: builder payload
- * Returns: { html }
- */
-router.post("/preview", async (req, res) => {
-  try {
-    const payload = req.body || {};
-    const model = buildProposalModel(payload);
-    const html = await renderProposalHtml(model);
-    res.json({ html });
-  } catch (err) {
-    console.error("PREVIEW failed:", err?.stack || err);
-    res.status(400).json({
-      error: "Could not render preview.",
-      details: err?.message || String(err)
-    });
-  }
-});
+const { htmlToPdfBuffer } = require("../services/pdf");
+// ⚠️ Update this import/path to whatever you use to render your HTML:
+const { renderProposalHtml } = require("../templates/renderProposalHtml"); // example
 
-/**
- * POST /api/pdf
- * Body: builder payload
- * Returns: application/pdf
- */
 router.post("/pdf", async (req, res) => {
   try {
-    const payload = req.body || {};
-    const model = buildProposalModel(payload);
-    const html = await renderProposalHtml(model);
+    // 1) Build HTML string (must be a string)
+    const html = renderProposalHtml(req.body);
 
-    const pdfBuffer = await htmlToPdfBuffer(html);
+    // 2) Generate PDF Buffer
+    const buf = await htmlToPdfBuffer(html);
 
-    const safeName =
-      (model.clientName || "proposal")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "") || "proposal";
+    // 3) Validate signature (quick sanity check)
+    if (!buf.slice(0, 5).equals(Buffer.from("%PDF-"))) {
+      console.error("[pdf] Not a PDF. First bytes:", buf.slice(0, 20).toString("utf8"));
+      return res.status(500).json({ error: "Generated output is not a PDF" });
+    }
 
+    // 4) Send as binary (NOT json)
+    res.status(200);
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${safeName}.pdf"`);
-    res.status(200).send(pdfBuffer);
+    res.setHeader("Content-Disposition", 'attachment; filename="customer.pdf"');
+    res.setHeader("Content-Length", String(buf.length));
+    res.setHeader("Cache-Control", "no-store");
+
+    return res.end(buf);
   } catch (err) {
-    console.error("PDF failed:", err?.stack || err);
-    // PDF failures are server failures, not "bad request"
-    res.status(500).json({
-      error: "Could not generate PDF.",
-      details: err?.message || String(err)
-    });
+    console.error("PDF route error:", err);
+    return res.status(500).json({ error: "PDF generation failed", message: err.message });
   }
 });
 
