@@ -8,10 +8,10 @@
     "node": "20.x"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "postinstall": "node -e \"const {execSync}=require('child_process'); const path=require('path'); const onRender=!!process.env.RENDER; const cache=process.env.PUPPETEER_CACHE_DIR || (onRender ? '/opt/render/.cache/puppeteer' : path.join(process.cwd(), '.cache','puppeteer')); const env={...process.env, PUPPETEER_CACHE_DIR: cache}; console.log('[postinstall] PUPPETEER_CACHE_DIR=', cache); execSync('npx --yes puppeteer browsers install chrome', {stdio:'inherit', env});\""
   },
   "dependencies": {
-    "@puppeteer/browsers": "^2.10.2",
     "express": "^4.19.2",
     "handlebars": "^4.7.8",
     "puppeteer": "^24.37.5"

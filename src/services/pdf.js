@@ -1,89 +1,53 @@
-const fs = require("fs");
-const path = require("path");
 const puppeteer = require("puppeteer");
-const { install, computeExecutablePath } = require("@puppeteer/browsers");
+const fs = require("fs");
 
-function getCacheDir() {
-  // /tmp is always writable on Render Linux containers
-  if (process.env.RENDER) return "/tmp/puppeteer";
-  return path.join(process.cwd(), ".cache", "puppeteer");
-}
+function pickExecutablePath() {
+  // If you ever decide to use a system Chrome later, you can set one of these env vars.
+  const fromEnv =
+    process.env.PUPPETEER_EXECUTABLE_PATH ||
+    process.env.CHROME_PATH ||
+    process.env.GOOGLE_CHROME_BIN;
 
-function getBuildIdSafe() {
-  // Prefer Puppeteer-pinned revision if available, else install "stable"
-  if (typeof puppeteer.browserRevision === "function") {
-    return puppeteer.browserRevision(); // usually a numeric-ish revision string
-  }
-  return "stable";
-}
+  if (fromEnv && fs.existsSync(fromEnv)) return fromEnv;
 
-async function ensureChromeExecutable() {
-  const cacheDir = process.env.PUPPETEER_CACHE_DIR || getCacheDir();
-  process.env.PUPPETEER_CACHE_DIR = cacheDir;
+  // Puppeteer-managed Chrome path (works when postinstall downloaded Chrome)
+  const pptrPath = puppeteer.executablePath();
+  if (pptrPath && fs.existsSync(pptrPath)) return pptrPath;
 
-  fs.mkdirSync(cacheDir, { recursive: true });
-
-  const buildId = getBuildIdSafe();
-
-  const getExePath = () =>
-    computeExecutablePath({
-      cacheDir,
-      browser: "chrome",
-      buildId
-    });
-
-  let executablePath = getExePath();
-
-  if (!fs.existsSync(executablePath)) {
-    console.log(`[pdf] Chrome missing. Installing buildId=${buildId} into ${cacheDir}...`);
-
-    await install({
-      cacheDir,
-      browser: "chrome",
-      buildId,
-      platform: "linux" // Render is Linux
-    });
-
-    executablePath = getExePath();
-
-    if (!fs.existsSync(executablePath)) {
-      const listing = fs.existsSync(cacheDir)
-        ? fs.readdirSync(cacheDir, { withFileTypes: true }).map(d => d.name).join(", ")
-        : "(cacheDir does not exist)";
-
-      throw new Error(
-        `[pdf] Chrome install did not produce an executable.\n` +
-          `Expected: ${executablePath}\n` +
-          `CacheDir: ${cacheDir}\n` +
-          `CacheDir contents: ${listing}`
-      );
-    }
-
-    console.log(`[pdf] Chrome installed OK at: ${executablePath}`);
-  }
-
-  return executablePath;
+  return null;
 }
 
 async function htmlToPdfBuffer(html) {
-  const executablePath = await ensureChromeExecutable();
+  const executablePath = pickExecutablePath();
+
+  if (!executablePath) {
+    throw new Error(
+      "Chrome executable not found. Ensure postinstall ran: `npx puppeteer browsers install chrome` and that PUPPETEER_CACHE_DIR is set on Render."
+    );
+  }
 
   const browser = await puppeteer.launch({
-    headless: "new",
     executablePath,
-    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+    headless: "new",
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu"
+    ]
   });
 
   try {
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "load" });
-    await page.emulateMediaType("screen");
+    await page.setContent(html, { waitUntil: "networkidle0" });
 
-    return await page.pdf({
+    const pdfBuffer = await page.pdf({
       format: "Letter",
       printBackground: true,
       margin: { top: "0.5in", right: "0.5in", bottom: "0.5in", left: "0.5in" }
     });
+
+    return pdfBuffer;
   } finally {
     await browser.close();
   }
