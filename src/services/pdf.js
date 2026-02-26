@@ -1,60 +1,100 @@
-const fs = require("fs");
-const path = require("path");
+// src/services/pdf.js
 const puppeteer = require("puppeteer");
 
-/**
- * Convert HTML to PDF (Buffer).
- * Render notes:
- * - We install Chrome into PUPPETEER_CACHE_DIR inside the project directory during build (postinstall).
- * - At runtime, we launch with --no-sandbox flags (required on many container hosts).
- */
+// Render/Linux needs these flags to run Chromium safely in a container
+const LAUNCH_ARGS = [
+  "--no-sandbox",
+  "--disable-setuid-sandbox",
+  "--disable-dev-shm-usage",
+  "--disable-gpu",
+  "--no-zygote",
+  "--single-process",
+];
+
 async function htmlToPdfBuffer(html) {
-  const cacheDir =
-    process.env.PUPPETEER_CACHE_DIR ||
-    path.join(process.cwd(), ".cache", "puppeteer");
-
-  // Ensure Puppeteer uses the same cache dir at runtime as it did at build time.
-  process.env.PUPPETEER_CACHE_DIR = cacheDir;
-
-  const executablePath = puppeteer.executablePath();
-
-  if (!executablePath || !fs.existsSync(executablePath)) {
-    const msg =
-      `Chrome executable not found.\n` +
-      `Expected executablePath=${executablePath}\n` +
-      `Checked cacheDir=${cacheDir}\n\n` +
-      `Fix:\n` +
-      `1) In Render env vars set PUPPETEER_CACHE_DIR=/opt/render/project/src/.cache/puppeteer\n` +
-      `2) Ensure build ran the postinstall step (clear build cache + redeploy).\n`;
-    throw new Error(msg);
-  }
-
-  const browser = await puppeteer.launch({
-    headless: "new",
-    executablePath,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--font-render-hinting=none"
-    ]
-  });
+  let browser;
+  let page;
 
   try {
-    const page = await browser.newPage();
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: LAUNCH_ARGS,
+      // If you set a custom executablePath elsewhere, remove it.
+      // Let puppeteer use the bundled Chromium it installs.
+    });
 
-    // If your templates pull remote assets (fonts/images), this helps.
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    page = await browser.newPage();
+
+    // Give Render some breathing room
+    page.setDefaultNavigationTimeout(120000); // 2 min
+    page.setDefaultTimeout(120000);
+
+    // Optional but VERY helpful: prevent slow/blocked 3rd party calls from hanging the render.
+    // Keep local assets + data URIs + same-document resources.
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const url = req.url();
+
+      // Allow data URIs (inline images/fonts)
+      if (url.startsWith("data:")) return req.continue();
+
+      // Allow your own site if you reference it (Render service URL)
+      // If your HTML references https://proposal-builder-7li4.onrender.com/..., allow it:
+      // (If you don't need this, you can delete this block.)
+      if (process.env.RENDER_EXTERNAL_URL && url.startsWith(process.env.RENDER_EXTERNAL_URL)) {
+        return req.continue();
+      }
+
+      // Block common hang-makers (analytics, trackers, huge videos, etc.)
+      if (
+        url.includes("google-analytics") ||
+        url.includes("googletagmanager") ||
+        url.includes("segment.com") ||
+        url.includes("mixpanel") ||
+        url.includes("hotjar") ||
+        url.includes("doubleclick") ||
+        url.includes("facebook") ||
+        url.includes("intercom") ||
+        url.endsWith(".mp4") ||
+        url.endsWith(".webm")
+      ) {
+        return req.abort();
+      }
+
+      // Otherwise allow
+      return req.continue();
+    });
+
+    // Load HTML. The key change:
+    // - use waitUntil: "domcontentloaded" so we don't wait on every network request to finish
+    // - then wait a short, fixed time for fonts/layout to settle
+    await page.setContent(html, {
+      waitUntil: "domcontentloaded",
+      timeout: 120000,
+    });
+
+    // Wait for fonts to be ready (prevents ugly fallback fonts in the PDF)
+    // If fonts never load, we still continue after the timeout.
+    await page.evaluateHandle("document.fonts && document.fonts.ready");
+    await page.waitForTimeout(750);
 
     const pdfBuffer = await page.pdf({
       format: "Letter",
       printBackground: true,
-      preferCSSPageSize: true
+      preferCSSPageSize: true,
+      timeout: 120000,
+      margin: { top: "0.5in", right: "0.5in", bottom: "0.5in", left: "0.5in" },
     });
 
     return pdfBuffer;
   } finally {
-    await browser.close();
+    // Always close to avoid memory leaks on Render
+    try {
+      if (page) await page.close();
+    } catch {}
+    try {
+      if (browser) await browser.close();
+    } catch {}
   }
 }
 
