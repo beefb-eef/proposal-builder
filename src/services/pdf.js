@@ -1,7 +1,6 @@
 // src/services/pdf.js
 const puppeteer = require("puppeteer");
 
-// Render/Linux needs these flags to run Chromium safely in a container
 const LAUNCH_ARGS = [
   "--no-sandbox",
   "--disable-setuid-sandbox",
@@ -11,6 +10,8 @@ const LAUNCH_ARGS = [
   "--single-process",
 ];
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function htmlToPdfBuffer(html) {
   let browser;
   let page;
@@ -19,18 +20,15 @@ async function htmlToPdfBuffer(html) {
     browser = await puppeteer.launch({
       headless: "new",
       args: LAUNCH_ARGS,
-      // If you set a custom executablePath elsewhere, remove it.
-      // Let puppeteer use the bundled Chromium it installs.
     });
 
     page = await browser.newPage();
 
     // Give Render some breathing room
-    page.setDefaultNavigationTimeout(120000); // 2 min
+    page.setDefaultNavigationTimeout(120000);
     page.setDefaultTimeout(120000);
 
-    // Optional but VERY helpful: prevent slow/blocked 3rd party calls from hanging the render.
-    // Keep local assets + data URIs + same-document resources.
+    // Prevent slow/blocked third-party calls from hanging the render
     await page.setRequestInterception(true);
     page.on("request", (req) => {
       const url = req.url();
@@ -38,14 +36,12 @@ async function htmlToPdfBuffer(html) {
       // Allow data URIs (inline images/fonts)
       if (url.startsWith("data:")) return req.continue();
 
-      // Allow your own site if you reference it (Render service URL)
-      // If your HTML references https://proposal-builder-7li4.onrender.com/..., allow it:
-      // (If you don't need this, you can delete this block.)
+      // Allow calls to your own Render service URL if referenced
       if (process.env.RENDER_EXTERNAL_URL && url.startsWith(process.env.RENDER_EXTERNAL_URL)) {
         return req.continue();
       }
 
-      // Block common hang-makers (analytics, trackers, huge videos, etc.)
+      // Block common hang-makers
       if (
         url.includes("google-analytics") ||
         url.includes("googletagmanager") ||
@@ -61,22 +57,20 @@ async function htmlToPdfBuffer(html) {
         return req.abort();
       }
 
-      // Otherwise allow
       return req.continue();
     });
 
-    // Load HTML. The key change:
-    // - use waitUntil: "domcontentloaded" so we don't wait on every network request to finish
-    // - then wait a short, fixed time for fonts/layout to settle
+    // Key change: don't wait for every network request forever
     await page.setContent(html, {
       waitUntil: "domcontentloaded",
       timeout: 120000,
     });
 
-    // Wait for fonts to be ready (prevents ugly fallback fonts in the PDF)
-    // If fonts never load, we still continue after the timeout.
-    await page.evaluateHandle("document.fonts && document.fonts.ready");
-    await page.waitForTimeout(750);
+    // Fonts/layout settle time (safe in Puppeteer v24)
+    try {
+      await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+    } catch {}
+    await sleep(750);
 
     const pdfBuffer = await page.pdf({
       format: "Letter",
@@ -88,7 +82,6 @@ async function htmlToPdfBuffer(html) {
 
     return pdfBuffer;
   } finally {
-    // Always close to avoid memory leaks on Render
     try {
       if (page) await page.close();
     } catch {}
